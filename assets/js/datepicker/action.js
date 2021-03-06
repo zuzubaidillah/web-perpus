@@ -1,0 +1,1 @@
+$('#myDatepicker2').datetimepicker({format: 'MM/DD/YYYY'});
