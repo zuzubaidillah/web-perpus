@@ -131,6 +131,18 @@ class M_menu extends CI_Model
 		$this->db->delete('user');
 		return TRUE;
 	}
+
+
+	
+	function tabelsql($sql)
+	{
+		$q = $this->db->query($sql);
+		if ($q->num_rows()==0) {
+			return 0;
+		}else{
+			return $q->result();
+		}
+	}
 }
 
 /* End of file M_menu.php */

@@ -188,7 +188,7 @@ class Menu extends CI_Controller
 				'kelas' => $kelas,
 				'alamat' => $alamat
 			);
-			if ($foto == 'default.jpg') {
+			if ($foto_lama == 'default.jpg') {
 				$this->M_menu->updateAnggota($data, $id_siswa);
 				redirect('menu/data_anggota');
 			} else {
@@ -339,7 +339,7 @@ class Menu extends CI_Controller
 				'penempatan' => $penempatan,
 				'jumlah' => $jumlah
 			);
-			if ($foto == 'default.jpg') {
+			if ($foto_lama == 'default.jpg') {
 				$this->M_menu->updateBuku($data, $id_buku);
 				redirect('menu/data_buku');
 			} else {
@@ -497,7 +497,7 @@ class Menu extends CI_Controller
 			}
 
 
-			if ($foto == 'default.jpg') {
+			if ($foto_lama == 'default.jpg') {
 				$this->M_menu->updateAdmin($data, $id);
 				redirect('menu/data_admin');
 			} else {
@@ -527,6 +527,41 @@ class Menu extends CI_Controller
 		$this->load->view('template/topbar');
 		$this->load->view('my_profile');
 		$this->load->view('template/footer');
+	}
+
+	public function pilih_cetak_qr_code()
+	{	
+		$title['thead'] = 'Pilih yang Dicetak | Web Perpus ';
+		$this->load->view('template/header', $title);
+		$this->load->view('template/sidebar');
+		$this->load->view('template/topbar');
+		$this->load->view('pilih_cetak_qr_code');
+		$this->load->view('template/footer');
+	}
+
+	public function cetak_qr_code()
+	{	
+
+		$dt = [
+            'mode'              => 'utf-8',
+            'format'            => 'A4',
+            'default_font_size' => 0,
+            'default_font'      => '',
+            'margin_left'       => 5,
+            'margin_right'      => 5,
+            'margin_top'        => 3,
+            'margin_bottom'     => 2,
+            'margin_header'     => 0,
+            'margin_footer'     => 0,
+            'orientation'       => 'P'
+        ];
+        $mpdf = new \Mpdf\Mpdf($dt);
+        $data['title'] = "cetak_qr_code";
+        $html = $this->load->view('cetak_qr_code', $data, true);
+        $mpdf->WriteHTML($html);
+        $mpdf->Output('contoh.pdf', \Mpdf\Output\Destination::INLINE);
+        // $mpdf->Output(); // opens in browser
+        //$mpdf->Output('invoice.pdf','D'); // it will work as normal download
 	}
 }
 

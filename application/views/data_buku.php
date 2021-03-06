@@ -34,7 +34,7 @@
 										</thead>
 										<tbody>
 											<?php
-			$id=mt_rand(1,2147483640);
+											$id=mt_rand(1,2147483640);
 											$n = 1;
 											foreach ($data as $dt) { ?>
 												<tr>
