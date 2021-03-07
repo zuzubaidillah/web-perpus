@@ -563,6 +563,64 @@ class Menu extends CI_Controller
         // $mpdf->Output(); // opens in browser
         //$mpdf->Output('invoice.pdf','D'); // it will work as normal download
 	}
+
+	public function cetak_qr_code_sesuai_judul()
+	{	
+
+		$dt = [
+            'mode'              => 'utf-8',
+            'format'            => 'A4',
+            'default_font_size' => 0,
+            'default_font'      => '',
+            'margin_left'       => 5,
+            'margin_right'      => 5,
+            'margin_top'        => 3,
+            'margin_bottom'     => 2,
+            'margin_header'     => 0,
+            'margin_footer'     => 0,
+            'orientation'       => 'P'
+        ];
+        $mpdf = new \Mpdf\Mpdf($dt);
+        $data['title'] = "cetak_qr_code";
+        $html = $this->load->view('cetak_qr_code_sesuai_judul', $data, true);
+        $mpdf->WriteHTML($html);
+        $mpdf->Output('contoh.pdf', \Mpdf\Output\Destination::INLINE);
+        // $mpdf->Output(); // opens in browser
+        //$mpdf->Output('invoice.pdf','D'); // it will work as normal download
+	}
+
+	public function cetak_qr_code_sesuai_penerbit($txtpenerbit=0)
+	{
+
+		$dt = [
+            'mode'              => 'utf-8',
+            'format'            => 'A4',
+            'default_font_size' => 0,
+            'default_font'      => '',
+            'margin_left'       => 5,
+            'margin_right'      => 5,
+            'margin_top'        => 3,
+            'margin_bottom'     => 2,
+            'margin_header'     => 0,
+            'margin_footer'     => 0,
+            'orientation'       => 'P'
+        ];
+        $mpdf = new \Mpdf\Mpdf($dt);
+        $data['title'] = "cetak_qr_code";
+		$txtpenerbit = str_replace('-',' ',$txtpenerbit);
+        $data['txtpenerbit'] = $txtpenerbit;
+        $html = $this->load->view('cetak_qr_code_sesuai_penerbit', $data, true);
+        $mpdf->WriteHTML($html);
+        $mpdf->Output('contoh.pdf', \Mpdf\Output\Destination::INLINE);
+        // $mpdf->Output(); // opens in browser
+        //$mpdf->Output('invoice.pdf','D'); // it will work as normal download
+	}
+
+	function ambilpengarang() {
+
+		$datapengarang = $this->M_menu->tabelsql("SELECT DISTINCT penerbit FROM buku");
+		echo json_encode($datapengarang);
+	}
 }
 
 /* End of file php */
