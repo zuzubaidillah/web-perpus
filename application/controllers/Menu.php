@@ -29,7 +29,8 @@ class Menu extends CI_Controller
 		$this->load->view('template/header', $title);
 		$this->load->view('template/sidebar');
 		$this->load->view('template/topbar');
-		$data['transaksi'] = $this->M_menu->getTransaksi()->result_array();
+		$data['pinjam'] = $this->M_menu->tabelsql("SELECT * FROM v_pinjam where status_pengembalian='1'");
+		$data['a'] = '';
 		$this->load->view('transaksi', $data);
 		$this->load->view('template/footer');
 	}
@@ -621,6 +622,13 @@ class Menu extends CI_Controller
 		$datapengarang = $this->M_menu->tabelsql("SELECT DISTINCT penerbit FROM buku");
 		echo json_encode($datapengarang);
 	}
+
+	function hasil_scan() {
+		$kode = $this->input->post("qrcode");
+		$datapengarang = $this->M_menu->tabelsql("SELECT *  FROM v_pinjam WHERE kode_buku='$kode' ORDER BY tgl_peminjaman DESC");
+		echo json_encode($datapengarang);
+	}
+	
 }
 
 /* End of file php */
