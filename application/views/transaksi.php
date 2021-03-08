@@ -121,8 +121,13 @@
 						scanner.stop();
 						console.log(o);
 						if (o==0) {
-							alert('data tidak ditemukan')
+							setTimeout(() => {
+								window.location='<?= base_url(); ?>menu/transaksi_pinjam'
+							}, 500);
 						}else{
+							setTimeout(() => {
+								window.location='<?= base_url(); ?>menu/transaksi_pengembalian/kode_buku'
+							}, 500);
 						}
 					},
 					error: function(jqxhr, status, err) {

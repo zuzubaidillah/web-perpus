@@ -625,8 +625,12 @@ class Menu extends CI_Controller
 
 	function hasil_scan() {
 		$kode = $this->input->post("qrcode");
-		$datapengarang = $this->M_menu->tabelsql("SELECT *  FROM v_pinjam WHERE kode_buku='$kode' ORDER BY tgl_peminjaman DESC");
-		echo json_encode($datapengarang);
+		$data = $this->M_menu->tabelsql("SELECT *  FROM v_pinjam WHERE kode_buku='$kode' ORDER BY tgl_peminjaman DESC");
+		// if ($data==0) {
+		// 	$data = $this->M_menu->tabelsql("SELECT *  FROM buku WHERE kode_buku='$kode'");
+		// }
+		$hasil = $data;
+		echo json_encode($hasil);
 	}
 	
 }
