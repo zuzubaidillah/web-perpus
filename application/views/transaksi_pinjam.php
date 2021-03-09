@@ -45,14 +45,14 @@
                                     <table width="100%" border="1">
                                         <tr>
                                             <td width="20%"><label for="">Kode Transaksi</label></td>
-                                            <td width="30%">Diisi Otomatis Sesuai berapa kali sudah meminjam</td>
+                                            <td width="30%"><input type="text" class="form-control" id="txtkode_transaksi" value="<?=$kode_transaksi;?>" disabled></td>
                                             <td width="20%"><label for="">Tanggal Pinjam</label></td>
-                                            <td width="30%">tanggal sekarang</td>
+                                            <td width="30%"><input type="text" class="form-control" id="txttgl_peminjaman" value="<?=$tgl_peminjaman;?>" disabled></td>
                                         </tr>
                                         <tr>
                                             <td width="20%"><label for="">Siswa</label></td>
                                             <td width="30%">
-                                                <select onchange="clicksiswa()" name="txtsiswa" id="txtsiswa">
+                                                <select onchange="clicksiswa()" name="txtsiswa" id="txtsiswa" class="form-control">
                                                     <option value="kosong">Pilih Siswa</option>
                                                     <?php
                                                     if ($dtsiswa !== 0) {
@@ -66,11 +66,11 @@
                                                 </select>
                                             </td>
                                             <td width="20%"><label for="">Tanggal Pengembalian</label></td>
-                                            <td width="30%">tanggal 7hari</td>
+                                            <td width="30%"><input type="text" class="form-control" id="txttgl_pengembalian" value="<?=$tgl_pengembalian;?>" disabled></td>
                                         </tr>
                                         <tr>
                                             <td width="20%"><label for="">Kelas</label></td>
-                                            <td width="30%"><input type="text" class="form-control" id="txtkelas"></td>
+                                            <td width="30%"><input type="text" class="form-control" id="txtkelas" disabled></td>
                                             <td width="20%"><label for="">????</label></td>
                                             <td width="30%"></td>
                                         </tr>

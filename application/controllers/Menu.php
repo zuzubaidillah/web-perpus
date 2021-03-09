@@ -9,6 +9,7 @@ class Menu extends CI_Controller
 		parent::__construct();
 		$this->load->model('M_menu');
 		cekAuth();
+		date_default_timezone_set("Asia/Jakarta");
 	}
 	public function index()
 	{
@@ -643,8 +644,38 @@ class Menu extends CI_Controller
 		$cekPeminjaman = $this->M_menu->tabelsql("SELECT * FROM v_pinjam WHERE status_pengembalian='proses'");
 		if ($cekPeminjaman==0) {
 			$data['cektransaksi'] = false;
-			$data['dtsiswa'] = $this->M_menu->tabelsql("SELECT *  FROM data_anggota WHERE id_siswa NOT IN(SELECT id_siswa FROM v_pinjam WHERE status_pengembalian='dipinjam')");
+			$data['dtsiswa'] = $this->M_menu->tabelsql("SELECT * FROM data_anggota WHERE id_siswa NOT IN(SELECT id_siswa FROM v_pinjam WHERE status_pengembalian='dipinjam')");
 			$data['dtpeminjaman'] = false;
+			$cekjumlahtransaksi = $this->M_menu->tabelsql("SELECT count(status_pengembalian) as jml FROM v_pinjam WHERE status_pengembalian!='proses'");
+			$id_uniq = mt_rand(1,2000000000);
+			$date = date("Y-m-d");
+			$date = strtotime($date);
+			$date7 = strtotime("+7 day", $date);
+			// $date = date("Y-m-d");
+			$data['tgl_peminjaman'] = date('d M Y', $date);
+			$data['tgl_pengembalian'] = date('d M Y', $date7);
+
+
+			$jml = $cekjumlahtransaksi[0]->jml;
+			$h = strlen($jml);
+			$j = $jml + 1;
+			if ($jml == '9') {
+				$h = '00' . $j;
+			} else if ($jml == '99') {
+				$h = '0' . $j;
+			} else if ($jml == '999') {
+				$h = $j;
+			} else if ($h == 1) {
+				$h = '000' . $j;
+			} else if ($h == 2) {
+				$h = '00' . $j;
+			} else if ($h == 3) {
+				$h = '0' . $j;
+			} else {
+				$h = $j;
+			}
+			$id_tagihan = 'TRA-' . $h . '-' . $id_uniq;
+			$data['kode_transaksi'] = $id_tagihan;
 		}else{
 			// proses ketika masih ada transaksi yang belum diselesaikan
 			$data['cektransaksi'] = true;
