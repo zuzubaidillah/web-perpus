@@ -632,6 +632,44 @@ class Menu extends CI_Controller
 		$hasil = $data;
 		echo json_encode($hasil);
 	}
+
+	function transaksi_pinjam(){
+		
+		$title['thead'] = ' Transaksi Pinjam | Web Perpus ';
+		// mendeteksi apakah ada yang masih proses peminjaman
+		// status_pengembalian = 'proses' proses transaksi
+		// status_pengembalian = 'dipinjam' masih dipinjam
+		// status_pengembalian = 'kembali' sudah dikembalikan
+		$cekPeminjaman = $this->M_menu->tabelsql("SELECT * FROM v_pinjam WHERE status_pengembalian='proses'");
+		if ($cekPeminjaman==0) {
+			$data['cektransaksi'] = false;
+			$data['dtsiswa'] = $this->M_menu->tabelsql("SELECT *  FROM data_anggota WHERE id_siswa NOT IN(SELECT id_siswa FROM v_pinjam WHERE status_pengembalian='dipinjam')");
+			$data['dtpeminjaman'] = false;
+		}else{
+			// proses ketika masih ada transaksi yang belum diselesaikan
+			$data['cektransaksi'] = true;
+			$data['dtsiswa'] = false;
+			$data['kode_transaksi'] = $cekPeminjaman[0]->kode_peminjaman;
+			$data['siswa'] = $cekPeminjaman[0]->id_siswa;
+			$data['kelas'] = $cekPeminjaman[0]->kelas;
+			$data['tgl_peminjaman'] = $cekPeminjaman[0]->tgl_peminjaman;
+			$data['tgl_pengembalian'] = $cekPeminjaman[0]->tgl_pengembalian;
+			$data['dtpeminjaman'] = $cekPeminjaman;
+		}
+
+		$this->load->view('template/header', $title);
+		$this->load->view('template/sidebar');
+		$this->load->view('template/topbar');
+		$this->load->view('transaksi_pinjam', $data);
+		$this->load->view('template/footer');
+
+	}
+
+	function carisiswasesuaiidsiswa(){
+		$id_siswa = $this->input->post('id_siswa');
+		$data = $this->M_menu->tabelsql("SELECT kelas  FROM data_anggota WHERE id_siswa='$id_siswa'");
+		echo json_encode($data);
+	}
 	
 }
 

@@ -1,0 +1,40 @@
+CREATE VIEW `v_pinjam` AS SELECT
+    `peminjaman`.`kode_peminjaman` AS `kode_peminjaman`,
+    `peminjaman_detail`.`kode_peminjaman_detail` AS `kode_peminjaman_detail`,
+    `peminjaman_detail`.`kode_buku` AS `kode_buku`,
+    `buku`.`judul` AS `judul`,
+    `peminjaman`.`id_siswa` AS `id_siswa`,
+    `data_anggota`.`nama_siswa` AS `nama_siswa`,
+    `data_anggota`.`nis` AS `nis`,
+    `peminjaman`.`kelas` AS `kelas`,
+    `peminjaman`.`telat` AS `telat`,
+    `peminjaman`.`denda` AS `denda`,
+    `peminjaman`.`admin` AS `admin`,
+    `user`.`nama` AS `nama`,
+    `peminjaman`.`tgl_peminjaman` AS `tgl_peminjaman`,
+    `peminjaman`.`tgl_pengembalian` AS `tgl_pengembalian`,
+    `peminjaman`.`status_pengembalian` AS `status_pengembalian`
+FROM
+    (
+        (
+            (
+                (
+                    `peminjaman`
+                JOIN `peminjaman_detail` ON
+                    (
+                        `peminjaman`.`kode_peminjaman` = `peminjaman_detail`.`kode_peminjaman`
+                    )
+                )
+            JOIN `user` ON
+                (`peminjaman`.`admin` = `user`.`id`)
+            )
+        JOIN `buku` ON
+            (
+                `peminjaman_detail`.`kode_buku` = `buku`.`kode_buku`
+            )
+        )
+    JOIN `data_anggota` ON
+        (
+            `peminjaman`.`id_siswa` = `data_anggota`.`id_siswa`
+        )
+    )
