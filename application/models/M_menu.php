@@ -143,6 +143,42 @@ class M_menu extends CI_Model
 			return $q->result();
 		}
 	}
+
+    public function tambahdata($tabel, $data)
+    {
+        $query = $this->db->insert($tabel, $data);
+
+        if ($query) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public function editdata($tabel, $data, $where, $id)
+    {
+        $this->db->where($where, $id);
+        $query = $this->db->update($tabel, $data);
+
+        if ($query) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public function hapusdata($tabel, $data)
+    {
+        // $this->db->error();
+        $query = $this->db->delete($tabel, $data);
+        // var_dump($query);die();
+
+        if ($query == TRUE) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 }
 
 /* End of file M_menu.php */

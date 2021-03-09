@@ -626,7 +626,7 @@ class Menu extends CI_Controller
 
 	function hasil_scan() {
 		$kode = $this->input->post("qrcode");
-		$data = $this->M_menu->tabelsql("SELECT *  FROM v_pinjam WHERE kode_buku='$kode' ORDER BY tgl_peminjaman DESC");
+		$data = $this->M_menu->tabelsql("SELECT *  FROM v_pinjam WHERE kode_buku='$kode' AND status_pengembalian='dipinjam' ORDER BY tgl_peminjaman DESC");
 		// if ($data==0) {
 		// 	$data = $this->M_menu->tabelsql("SELECT *  FROM buku WHERE kode_buku='$kode'");
 		// }
@@ -652,9 +652,13 @@ class Menu extends CI_Controller
 			$date = strtotime($date);
 			$date7 = strtotime("+7 day", $date);
 			// $date = date("Y-m-d");
-			$data['tgl_peminjaman'] = date('d M Y', $date);
-			$data['tgl_pengembalian'] = date('d M Y', $date7);
+			$data['tgl_peminjaman'] = date('Y-m-d', $date);
+			$data['tgl_pengembalian'] = date('Y-m-d', $date7);
 
+			$cekKodePeminjaman = $this->M_menu->tabelsql("SELECT kode_peminjaman_detail FROM peminjaman_detail WHERE kode_peminjaman_detail='$id_uniq'");
+			if ($cekKodePeminjaman!==0) {
+				$id_uniq = mt_rand();
+			}
 
 			$jml = $cekjumlahtransaksi[0]->jml;
 			$h = strlen($jml);
@@ -681,7 +685,8 @@ class Menu extends CI_Controller
 			$data['cektransaksi'] = true;
 			$data['dtsiswa'] = false;
 			$data['kode_transaksi'] = $cekPeminjaman[0]->kode_peminjaman;
-			$data['siswa'] = $cekPeminjaman[0]->id_siswa;
+			$data['id_siswa'] = $cekPeminjaman[0]->id_siswa;
+			$data['nama_siswa'] = $cekPeminjaman[0]->nama_siswa;
 			$data['kelas'] = $cekPeminjaman[0]->kelas;
 			$data['tgl_peminjaman'] = $cekPeminjaman[0]->tgl_peminjaman;
 			$data['tgl_pengembalian'] = $cekPeminjaman[0]->tgl_pengembalian;
@@ -700,6 +705,118 @@ class Menu extends CI_Controller
 		$id_siswa = $this->input->post('id_siswa');
 		$data = $this->M_menu->tabelsql("SELECT kelas  FROM data_anggota WHERE id_siswa='$id_siswa'");
 		echo json_encode($data);
+	}
+
+	public function cariKodeBukuDanSimpan()
+	{
+		$kode_buku = $this->input->post('qrcode');
+		$kode_transaksi = $this->input->post('kode_transaksi');
+		$kelas = $this->input->post('kelas');
+		$id_siswa = $this->input->post('id_siswa');
+		$tgl_peminjaman = $this->input->post('tgl_peminjaman');
+		$tgl_pengembalian = $this->input->post('tgl_pengembalian');
+		$denda = 0;
+		$telat = 0;
+		$cekKodeBuku = $this->M_menu->tabelsql("SELECT kode_buku FROM buku WHERE kode_buku='$kode_buku'");
+
+		if ($cekKodeBuku==0) {
+			$data = 'bukuTidakAda';
+		}else{
+			$cekKodeBukuDiV_pinjam = $this->M_menu->tabelsql("SELECT kode_buku  FROM v_pinjam WHERE kode_buku='$kode_buku' AND status_pengembalian='dipinjam'");
+
+			if ($cekKodeBukuDiV_pinjam!==0) {
+				$data = 'bukuSudahDiPinjam';
+			}else{
+				// cek apakah kode_peminjaman sudah ada
+				$cekKodeTransaksi = $this->M_menu->tabelsql("SELECT kode_buku  FROM v_pinjam WHERE kode_peminjaman='$kode_transaksi' AND status_pengembalian='proses'");
+				if ($cekKodeTransaksi==0) {
+					// code dibawah ini dijalankan jika kodeTransaksi Tidak ada
+					$simpanPeminjaman = [
+						'kode_peminjaman'=>$kode_transaksi,
+						'kelas'=>$kelas,
+						'id_siswa'=>$id_siswa,
+						'tgl_peminjaman'=>$tgl_peminjaman,
+						'tgl_pengembalian'=>$tgl_pengembalian,
+						'denda'=>$denda,
+						'admin'=>1,
+						'jumlah_dipinjam'=>0,
+						'status_pengembalian'=>'proses',
+						'telat'=>$telat
+					];
+					// $prosesSimpanPeminjaman = 1;
+					$prosesSimpanPeminjaman = $this->M_menu->tambahdata('peminjaman', $simpanPeminjaman);
+					if ($prosesSimpanPeminjaman==0) {
+						$data = 'gagalSimpanPeminjaman';
+						echo json_encode($data);
+						die();
+					}
+				}
+
+				$cekKodeBuku = $this->M_menu->tabelsql("SELECT kode_buku  FROM v_pinjam WHERE kode_buku='$kode_buku' AND status_pengembalian='proses'");
+				if($cekKodeBuku!==0){
+					$data = 'bukuSudahAda';
+					echo json_encode($data);
+					die();
+				}
+				$id_uniq_detail = mt_rand();
+				$cekKodePeminjamanDetail = $this->M_menu->tabelsql("SELECT kode_peminjaman_detail FROM peminjaman_detail WHERE kode_peminjaman_detail='$id_uniq_detail'");
+				if ($cekKodePeminjamanDetail!==0) {
+					$id_uniq_detail = mt_rand();
+				}
+				$simpanPeminjamanDetail = [
+					'kode_peminjaman_detail'=>$id_uniq_detail,
+					'kode_peminjaman'=>$kode_transaksi,
+					'kode_buku'=>$kode_buku
+				];
+				$prosesSimpanPeminjamanDetail = $this->M_menu->tambahdata('peminjaman_detail',$simpanPeminjamanDetail);
+				if ($prosesSimpanPeminjamanDetail==0) {
+					$data = 'gagalSimpanPeminjamanDetail';
+					echo json_encode($data);
+					die();
+				}else{
+					$hitungPeminjamaDetail = $this->M_menu->tabelsql("SELECT count(kode_peminjaman_detail) as jml FROM peminjaman_detail WHERE kode_peminjaman='$kode_transaksi'");
+					$jml = $hitungPeminjamaDetail[0]->jml;
+					$editPeminjama = [
+						'jumlah_dipinjam' => $jml+1
+					];
+					$this->M_menu->editdata('peminjaman', $editPeminjama, 'kode_peminjaman', $kode_transaksi);
+				}
+			}
+		}
+		$data = 'sukses';
+		echo json_encode($data);
+	}
+
+	
+
+	public function apiPeminjaman()
+	{
+		$dtJSON = '{"data": [xxx]}';
+		$dtisi = '';
+		$no = 1;
+
+		$sqlpeminjaman_detail = "SELECT v_pinjam.*,buku.penerbit,buku.pengarang,buku.jenis_buku FROM v_pinjam INNER JOIN buku ON v_pinjam.kode_buku=buku.kode_buku WHERE v_pinjam.status_pengembalian='proses'";
+		$dtpeminjaman_detail = $this->M_menu->tabelsql($sqlpeminjaman_detail);
+		if ($dtpeminjaman_detail) {
+			foreach ($dtpeminjaman_detail as $h) {
+				$kode_transaksi = $h->kode_peminjaman_detail;
+				$judul = $h->judul;
+				$penerbit = $h->penerbit;
+				$pengarang = $h->pengarang;
+				$jenis = $h->jenis_buku;
+
+				$dtisi .= '{"no":"' . $no . '","kode_peminjaman_detail":"' . $kode_transaksi . '","judul":"' . $judul . '","penerbit":"' . $penerbit . '","pengarang":"' . $pengarang . '","jenis":"' . $jenis . '","aksi":"' . $kode_transaksi . '"},';
+
+				$no++;
+			}
+			// meletakkan di json
+			$dtisifix = rtrim($dtisi, ",");
+			$data = str_replace("xxx", $dtisifix, $dtJSON);
+
+			echo $data;
+		} else {
+			echo '{"data":[]}';
+		}
 	}
 	
 }
