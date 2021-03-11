@@ -818,6 +818,40 @@ class Menu extends CI_Controller
 			echo '{"data":[]}';
 		}
 	}
+
+	public function resetPeminjamanProses()
+	{
+		$kode_buku = $this->input->post('qrcode');
+		$kode_transaksi = $this->input->post('kode_transaksi');
+		$kelas = $this->input->post('kelas');
+		$id_siswa = $this->input->post('id_siswa');
+		$tgl_peminjaman = $this->input->post('tgl_peminjaman');
+		$tgl_pengembalian = $this->input->post('tgl_pengembalian');
+
+		$cekpeminjaman = $this->M_menu->tabelsql("SELECT kelas  FROM v_pinjam WHERE status_pengembalian='proses'");
+		if ($cekpeminjaman) {
+			$dari = [
+				'kode_peminjaman' => $kode_transaksi
+			];
+			$hapusPeminjaman = $this->M_menu->hapusdata("peminjaman",$dari);
+			if ($hapusPeminjaman) {
+				$dari = [
+					'kode_peminjaman' => $kode_transaksi
+				];
+				$hapusPeminjaman = $this->M_menu->hapusdata("peminjaman_detail",$dari);
+				if ($hapusPeminjaman) {
+					$data = '1';
+				}else{
+					$data = 'peminjamanDetailGagalDiHapus';
+				}
+			}else{
+				$data = 'peminjamanGagalDiHapus';
+			}
+		}else{
+			$data='dataMasihKosong';
+		}
+		echo json_encode($data);
+	}
 	
 }
 

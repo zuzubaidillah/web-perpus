@@ -83,6 +83,7 @@
                                     </table>
                                 <?php } ?>
                                 <a href="#" onclick="clickTambahBuku()" class="btn btn-success"><i class="fa fa-fw fa-plus-square"></i> Tambah Buku</a>
+                                <a href="#" onclick="clickReset()" class="btn btn-danger"><i class="fa fa-fw fa-trash"></i> Reset</a>
                                 <div class="card-box table-responsive">
                                     <table id="tabel_peminjaman_detail" class="table table-striped table-bordered" style="width:100%">
                                         <thead>
@@ -139,12 +140,13 @@
         <script src="<?= base_url() ?>assets/vendors/pdfmake/build/pdfmake.min.js"></script>
         <script src="<?= base_url() ?>assets/vendors/pdfmake/build/vfs_fonts.js"></script>
         <script>
-        $(document).ready(function () {
-			$('#tabel_peminjaman_detail').DataTable().destroy();
-			setTimeout(() => {
-				tbl()
-			}, 500);
-        });
+            $(document).ready(function() {
+                $('#tabel_peminjaman_detail').DataTable().destroy();
+                setTimeout(() => {
+                    tbl()
+                }, 500);
+            });
+
             function tbl() {
 
                 $('#tabel_peminjaman_detail').DataTable({
@@ -298,8 +300,8 @@
                                         $('#tabel_peminjaman_detail').DataTable().ajax.reload()
                                         setTimeout(() => {}, 500);
                                         var nmsiswa = $('#txtsiswa').find(':selected').text()
-                                        $('#txtsiswa').html('<option value="'+id_siswa+'">'+nmsiswa+'</option>');
-                                        $('#txtsiswa').attr("disabled",true);
+                                        $('#txtsiswa').html('<option value="' + id_siswa + '">' + nmsiswa + '</option>');
+                                        $('#txtsiswa').attr("disabled", true);
                                     }
                                 },
                                 error: function(jqxhr, status, err) {
@@ -321,6 +323,66 @@
                             alert(e);
                         });
                     }, 500);
+                }
+            }
+
+            function clickReset() {
+                var id_siswa = $('#txtsiswa').val();
+                var kel = $('#txtkelas').val();
+                var kode = $('#txtkode_transaksi').val();
+                var tglpinjam = $('#txttgl_peminjaman').val();
+                var tglkembali = $('#txttgl_pengembalian').val();
+                console.log(id_siswa, kel, kode, tglpinjam, tglkembali);
+
+                if (kel == '') {
+
+                } else if (kode == '') {
+
+                } else if (tglpinjam == '') {
+
+                } else if (tglkembali == '') {
+
+                } else if (id_siswa == 'kosong') {
+
+                } else {
+
+                    if (confirm('Apakah Yakin dengan keputusan Anda?')) {
+                        
+                        $.ajax({
+                            url: "<?= base_url('menu/resetPeminjamanProses'); ?>",
+                            type: "post",
+                            data: {
+                                kelas: kel,
+                                kode_transaksi: kode,
+                                tgl_peminjaman: tglpinjam,
+                                tgl_pengembalian: tglkembali,
+                                id_siswa: id_siswa
+                            },
+                            dataType: "json",
+                            cache: false,
+                            success: function(data) {
+                                console.log(data);
+                                if (data == '1') {
+                                    alert('sukses')
+                                    window.location = ''
+                                }else if (data == 'dataMasihKosong') {
+                                    alert('dataMasihKosong')
+                                }else if (data == 'peminjamanGagalDiHapus') {
+                                    alert('peminjamanGagalDiHapus')
+                                    window.location = ''
+                                }else if (data == 'peminjamanDetailGagalDiHapus') {
+                                    alert('peminjamanDetailGagalDiHapus')
+                                    window.location = ''
+                                }
+                            },
+                            error: function(jqxhr, status, err) {
+                                console.log(jqxhr)
+                                alert('Koneksi Lambat. clicksiswa')
+                                window.location = ''
+                            }
+                        });
+                    }
+
                 }
             }
 
