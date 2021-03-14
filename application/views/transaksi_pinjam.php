@@ -84,6 +84,7 @@
                                 <?php } ?>
                                 <a href="#" onclick="clickTambahBuku()" class="btn btn-success"><i class="fa fa-fw fa-plus-square"></i> Tambah Buku</a>
                                 <a href="#" onclick="clickReset()" class="btn btn-danger"><i class="fa fa-fw fa-trash"></i> Reset</a>
+                                <a href="#" onclick="clickProses()" class="btn btn-primary"><i class="fa fa-fw fa-plus-square"></i> Proses</a>
                                 <div class="card-box table-responsive">
                                     <table id="tabel_peminjaman_detail" class="table table-striped table-bordered" style="width:100%">
                                         <thead>
@@ -347,7 +348,7 @@
                 } else {
 
                     if (confirm('Apakah Yakin dengan keputusan Anda?')) {
-                        
+
                         $.ajax({
                             url: "<?= base_url('menu/resetPeminjamanProses'); ?>",
                             type: "post",
@@ -365,12 +366,68 @@
                                 if (data == '1') {
                                     alert('sukses')
                                     window.location = ''
-                                }else if (data == 'dataMasihKosong') {
+                                } else if (data == 'dataMasihKosong') {
                                     alert('dataMasihKosong')
-                                }else if (data == 'peminjamanGagalDiHapus') {
+                                } else if (data == 'peminjamanGagalDiHapus') {
                                     alert('peminjamanGagalDiHapus')
                                     window.location = ''
-                                }else if (data == 'peminjamanDetailGagalDiHapus') {
+                                } else if (data == 'peminjamanDetailGagalDiHapus') {
+                                    alert('peminjamanDetailGagalDiHapus')
+                                    window.location = ''
+                                }
+                            },
+                            error: function(jqxhr, status, err) {
+                                console.log(jqxhr)
+                                alert('Koneksi Lambat. clicksiswa')
+                                window.location = ''
+                            }
+                        });
+                    }
+
+                }
+            }
+
+            function clickProses() {
+                var id_siswa = $('#txtsiswa').val();
+                var kel = $('#txtkelas').val();
+                var kode = $('#txtkode_transaksi').val();
+                var tglpinjam = $('#txttgl_peminjaman').val();
+                var tglkembali = $('#txttgl_pengembalian').val();
+                console.log(id_siswa, kel, kode, tglpinjam, tglkembali);
+
+                if (kel == '') {
+
+                } else if (kode == '') {
+
+                } else if (tglpinjam == '') {
+
+                } else if (tglkembali == '') {
+
+                } else if (id_siswa == 'kosong') {
+
+                } else {
+
+                    if (confirm('Apakah Yakin dengan keputusan Anda?')) {
+
+                        $.ajax({
+                            url: "<?= base_url('menu/prosesPeminjaman'); ?>",
+                            type: "post",
+                            data: {
+                                kode_transaksi: kode
+                            },
+                            dataType: "json",
+                            cache: false,
+                            success: function(data) {
+                                console.log(data);
+                                if (data == '1') {
+                                    alert('sukses')
+                                    window.location = ''
+                                } else if (data == 'dataMasihKosong') {
+                                    alert('dataMasihKosong')
+                                } else if (data == 'peminjamanGagalDiHapus') {
+                                    alert('peminjamanGagalDiHapus')
+                                    window.location = ''
+                                } else if (data == 'peminjamanDetailGagalDiHapus') {
                                     alert('peminjamanDetailGagalDiHapus')
                                     window.location = ''
                                 }

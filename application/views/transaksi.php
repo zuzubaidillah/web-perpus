@@ -29,15 +29,40 @@
 												<th>Kode Peminjaman</th>
 												<th>Siswa</th>
 												<th>Kelas</th>
-												<th>Buku</th>
 												<th>Tgl Peminjaman</th>
 												<th>Tgl Pengembalian</th>
 												<th style="width: 50px;">Jumlah Dipinjam</th>
 												<th>Status</th>
-												<th>Aksi</th>
 											</tr>
 										</thead>
 										<tbody>
+											<?php
+											if ($pinjam !== 0) {
+												$no = 1;
+												foreach ($pinjam as $k) {
+													$kode = $k->kode_peminjaman;
+													$siswa = $k->nama_siswa;
+													$kelas = $k->kelas;
+													$tgl_pinjam = $k->tgl_peminjaman;
+													$tgl_pengembalian = $k->tgl_pengembalian;
+													$jml = $k->jumlah_dipinjam;
+													$status = $k->status_pengembalian;
+											?>
+													<tr>
+														<td><?=$no;?></td>
+														<td><?=$kode;?></td>
+														<td><?=$siswa;?></td>
+														<td><?=$kelas;?></td>
+														<td><?=$tgl_pinjam;?></td>
+														<td><?=$tgl_pengembalian;?></td>
+														<td><?=$jml;?></td>
+														<td><?=$status;?></td>
+													</tr>
+											<?php
+												$no++;
+												}
+											}
+											?>
 										</tbody>
 									</table>
 								</div>
@@ -120,13 +145,13 @@
 						that.isclick = true;
 						scanner.stop();
 						console.log(o);
-						if (o==0) {
+						if (o == 0) {
 							setTimeout(() => {
-								window.location='<?= base_url(); ?>menu/transaksi_pinjam'
+								window.location = '<?= base_url(); ?>menu/transaksi_pinjam'
 							}, 500);
-						}else{
+						} else {
 							setTimeout(() => {
-								window.location='<?= base_url(); ?>menu/transaksi_pengembalian/kode_buku'
+								window.location = '<?= base_url(); ?>menu/transaksi_pengembalian/kode_buku'
 							}, 500);
 						}
 					},

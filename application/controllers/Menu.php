@@ -30,8 +30,7 @@ class Menu extends CI_Controller
 		$this->load->view('template/header', $title);
 		$this->load->view('template/sidebar');
 		$this->load->view('template/topbar');
-		$data['pinjam'] = $this->M_menu->tabelsql("SELECT * FROM v_pinjam where status_pengembalian='1'");
-		$data['a'] = '';
+		$data['pinjam'] = $this->M_menu->tabelsql("SELECT peminjaman.*,data_anggota.nama_siswa FROM peminjaman inner join data_anggota on peminjaman.id_siswa=data_anggota.id_siswa where peminjaman.status_pengembalian='dipinjam'");
 		$this->load->view('transaksi', $data);
 		$this->load->view('template/footer');
 	}
@@ -726,6 +725,8 @@ class Menu extends CI_Controller
 
 			if ($cekKodeBukuDiV_pinjam!==0) {
 				$data = 'bukuSudahDiPinjam';
+				echo json_encode($data);
+				die();
 			}else{
 				// cek apakah kode_peminjaman sudah ada
 				$cekKodeTransaksi = $this->M_menu->tabelsql("SELECT kode_buku  FROM v_pinjam WHERE kode_peminjaman='$kode_transaksi' AND status_pengembalian='proses'");
@@ -821,7 +822,6 @@ class Menu extends CI_Controller
 
 	public function resetPeminjamanProses()
 	{
-		$kode_buku = $this->input->post('qrcode');
 		$kode_transaksi = $this->input->post('kode_transaksi');
 		$kelas = $this->input->post('kelas');
 		$id_siswa = $this->input->post('id_siswa');
@@ -844,6 +844,27 @@ class Menu extends CI_Controller
 				}else{
 					$data = 'peminjamanDetailGagalDiHapus';
 				}
+			}else{
+				$data = 'peminjamanGagalDiHapus';
+			}
+		}else{
+			$data='dataMasihKosong';
+		}
+		echo json_encode($data);
+	}
+
+	public function prosesPeminjaman()
+	{
+		$kode_transaksi = $this->input->post('kode_transaksi');
+
+		$cekpeminjaman = $this->M_menu->tabelsql("SELECT kelas  FROM v_pinjam WHERE status_pengembalian='proses'");
+		if ($cekpeminjaman) {
+			$dari = [
+				'status_pengembalian' => 'dipinjam'
+			];
+			$editPeminjaman = $this->M_menu->editdata("peminjaman",$dari,'kode_peminjaman',$kode_transaksi);
+			if ($editPeminjaman) {
+				$data = '1';
 			}else{
 				$data = 'peminjamanGagalDiHapus';
 			}
