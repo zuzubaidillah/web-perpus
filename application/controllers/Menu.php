@@ -645,7 +645,7 @@ class Menu extends CI_Controller
 			$data['cektransaksi'] = false;
 			$data['dtsiswa'] = $this->M_menu->tabelsql("SELECT * FROM data_anggota WHERE id_siswa NOT IN(SELECT id_siswa FROM v_pinjam WHERE status_pengembalian='dipinjam')");
 			$data['dtpeminjaman'] = false;
-			$cekjumlahtransaksi = $this->M_menu->tabelsql("SELECT count(status_pengembalian) as jml FROM v_pinjam WHERE status_pengembalian!='proses'");
+			$cekjumlahtransaksi = $this->M_menu->tabelsql("SELECT count(status_pengembalian) as jml FROM peminjaman WHERE status_pengembalian!='proses'");
 			$id_uniq = mt_rand(1,2000000000);
 			$date = date("Y-m-d");
 			$date = strtotime($date);
