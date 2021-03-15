@@ -873,6 +873,55 @@ class Menu extends CI_Controller
 		}
 		echo json_encode($data);
 	}
+
+	function transaksi_pengembalian($kode_transaksi='0'){
+		
+		if ($kode_transaksi=='0') {
+			redirect('menu/transaksi?keterangan=TerjadiKesalahan','refresh');
+		}
+		$title['thead'] = ' Transaksi Pinjam | Web Perpus ';
+		// mendeteksi apakah ada yang masih proses peminjaman
+		// status_pengembalian = 'proses' proses transaksi
+		// status_pengembalian = 'dipinjam' masih dipinjam
+		// status_pengembalian = 'kembali' sudah dikembalikan
+		$cekPeminjaman = $this->M_menu->tabelsql("SELECT * FROM v_pinjam WHERE kode_peminjaman='$kode_transaksi' AND status_pengembalian='dipinjam'");
+		if ($cekPeminjaman==0) {
+			redirect('menu/transaksi?keterangan=DataTIdakDitemukan','refresh');
+		}else{
+			// proses ketika masih ada transaksi yang belum diselesaikan
+			$data['cektransaksi'] = true;
+			$data['dtsiswa'] = false;
+			$data['kode_transaksi'] = $cekPeminjaman[0]->kode_peminjaman;
+			$data['id_siswa'] = $cekPeminjaman[0]->id_siswa;
+			$data['nama_siswa'] = $cekPeminjaman[0]->nama_siswa;
+			$data['kelas'] = $cekPeminjaman[0]->kelas;
+			$data['tgl_peminjaman'] = $cekPeminjaman[0]->tgl_peminjaman;
+			$data['tgl_pengembalian'] = $cekPeminjaman[0]->tgl_pengembalian;
+			$data['dtpeminjaman'] = $cekPeminjaman;
+			$date = "2021-03-31";
+			$terlambat = date_diff(date_create($cekPeminjaman[0]->tgl_pengembalian),date_create($date));
+			if ($date<$cekPeminjaman[0]->tgl_pengembalian) {
+				$hari = 0;
+				$denda = 0;
+			}else{
+				$hari = $terlambat->format("%a");
+				$denda = $hari*10000;
+			}
+			if ($denda>=50000) {
+				$denda = "Buku";
+			}
+			$data['denda'] = $denda;
+			$data['telat'] = $hari;
+			$data['tgl_sekarang'] = $date;
+		}
+
+		$this->load->view('template/header', $title);
+		$this->load->view('template/sidebar');
+		$this->load->view('template/topbar');
+		$this->load->view('transaksi_pengembalian', $data);
+		$this->load->view('template/footer');
+
+	}
 	
 }
 

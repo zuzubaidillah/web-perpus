@@ -145,13 +145,15 @@
 						that.isclick = true;
 						scanner.stop();
 						console.log(o);
+						alert(o[0].kode_peminjaman)
 						if (o == 0) {
 							setTimeout(() => {
 								window.location = '<?= base_url(); ?>menu/transaksi_pinjam'
 							}, 500);
 						} else {
+							var kode_transaksi = o[0].kode_peminjaman;
 							setTimeout(() => {
-								window.location = '<?= base_url(); ?>menu/transaksi_pengembalian/kode_buku'
+								window.location = '<?= base_url(); ?>menu/transaksi_pengembalian/'+kode_transaksi
 							}, 500);
 						}
 					},
