@@ -145,7 +145,6 @@
 						that.isclick = true;
 						scanner.stop();
 						console.log(o);
-						alert(o[0].kode_peminjaman)
 						if (o == 0) {
 							setTimeout(() => {
 								window.location = '<?= base_url(); ?>menu/transaksi_pinjam'

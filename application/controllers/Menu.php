@@ -884,7 +884,9 @@ class Menu extends CI_Controller
 		// status_pengembalian = 'proses' proses transaksi
 		// status_pengembalian = 'dipinjam' masih dipinjam
 		// status_pengembalian = 'kembali' sudah dikembalikan
-		$cekPeminjaman = $this->M_menu->tabelsql("SELECT * FROM v_pinjam WHERE kode_peminjaman='$kode_transaksi' AND status_pengembalian='dipinjam'");
+		$cekPeminjaman = "SELECT v_pinjam.*,buku.penerbit,buku.pengarang,buku.jenis_buku as jenis FROM v_pinjam INNER JOIN buku ON v_pinjam.kode_buku=buku.kode_buku WHERE v_pinjam.status_pengembalian='dipinjam'";
+		// $cekPeminjaman = $this->M_menu->tabelsql("SELECT * FROM v_pinjam WHERE kode_peminjaman='$kode_transaksi' AND status_pengembalian='dipinjam'");
+		$cekPeminjaman = $this->M_menu->tabelsql($cekPeminjaman);
 		if ($cekPeminjaman==0) {
 			redirect('menu/transaksi?keterangan=DataTIdakDitemukan','refresh');
 		}else{

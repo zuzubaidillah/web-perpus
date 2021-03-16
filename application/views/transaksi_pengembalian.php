@@ -69,6 +69,29 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <?php
+                                            if ($dtpeminjaman !== 0) {
+                                                $no = 1;
+                                                foreach ($dtpeminjaman as $k) {
+                                                    $kode = $k->kode_peminjaman_detail;
+                                                    $judul = $k->judul;
+                                                    $penerbit = $k->penerbit;
+                                                    $pengarang = $k->pengarang;
+                                                    $jenis = $k->jenis;
+                                            ?>
+                                                    <tr>
+                                                        <td><?= $no++; ?></td>
+                                                        <td><?= $kode; ?></td>
+                                                        <td><?= $judul; ?></td>
+                                                        <td><?= $penerbit; ?></td>
+                                                        <td><?= $pengarang; ?></td>
+                                                        <td><?= $jenis; ?></td>
+                                                        <td></td>
+                                                    </tr>
+                                            <?php
+                                                }
+                                            }
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -111,252 +134,6 @@
         <script src="<?= base_url() ?>assets/vendors/pdfmake/build/pdfmake.min.js"></script>
         <script src="<?= base_url() ?>assets/vendors/pdfmake/build/vfs_fonts.js"></script>
         <script>
-            $(document).ready(function() {
-                $('#tabel_peminjaman_detail').DataTable().destroy();
-                setTimeout(() => {
-                    tbl()
-                }, 500);
-            });
-
-            function tbl() {
-
-                $('#tabel_peminjaman_detail').DataTable({
-                    "initComplete": function(settings, json) {
-                        // hilangreload()
-                    },
-                    "scrollX": true,
-                    "processing": true,
-                    lengthMenu: [
-                        [-1],
-                        ["All"]
-                    ],
-                    "paging": false,
-                    "lengthChange": true,
-                    "searching": false,
-                    "ordering": false,
-                    "info": true,
-                    "autoWidth": false,
-                    "responsive": false,
-                    colReorder: {
-                        realtime: true
-                    },
-                    "ajax": "<?= base_url(); ?>menu/apiPeminjaman",
-                    "columns": [{
-                            "data": "no",
-                            render: function(data, type, row, meta) {
-                                data = '<div align="center">' + data + '</div>'
-                                return data;
-                            }
-                        },
-                        {
-                            "data": "kode_peminjaman_detail"
-                        },
-                        {
-                            "data": "judul"
-                        },
-                        {
-                            "data": "penerbit"
-                        },
-                        {
-                            "data": "pengarang"
-                        },
-                        {
-                            "data": "jenis"
-                        },
-                        {
-                            "data": "aksi"
-                        }
-                    ],
-                    "createdRow": function(row, data, dataIndex) {
-                        if (data.judul == "tot") {
-                            // $(row).addClass('bg-olive')
-                        } else if (data.judul == "-") {
-                            // $(row).addClass('bg-info')
-                        }
-                    }
-                });
-            }
-
-            function clicksiswa() {
-                var id_siswa = $('#txtsiswa').val();
-                console.log();
-
-                $.ajax({
-                    url: "<?= base_url('menu/carisiswasesuaiidsiswa'); ?>",
-                    type: "post",
-                    data: {
-                        id_siswa: id_siswa
-                    },
-                    dataType: "json",
-                    cache: false,
-                    success: function(data) {
-                        console.log(data);
-                        if (data !== 0) {
-                            $('#txtkelas').val(data[0].kelas);
-                        }
-                    },
-                    error: function(jqxhr, status, err) {
-                        console.log(jqxhr)
-                        alert('Koneksi Lambat. clicksiswa')
-                        window.location = ''
-                    }
-                });
-            }
-
-
-            var scanner = new Instascan.Scanner({
-                video: document.getElementById('preview')
-            });
-
-            function clickTambahBuku() {
-                var id_siswa = $('#txtsiswa').val();
-                var kel = $('#txtkelas').val();
-                var kode = $('#txtkode_transaksi').val();
-                var tglpinjam = $('#txttgl_peminjaman').val();
-                var tglkembali = $('#txttgl_pengembalian').val();
-                console.log(id_siswa, kel, kode, tglpinjam, tglkembali);
-
-                if (kel == '') {
-
-                } else if (kode == '') {
-
-                } else if (tglpinjam == '') {
-
-                } else if (tglkembali == '') {
-
-                } else if (id_siswa == 'kosong') {
-
-                } else {
-
-                    $('#tambah').modal("show")
-                    setTimeout(() => {
-
-                        scanner.addListener('scan', function(content) {
-                            console.log(content);
-                            var audio = new Audio('<?= base_url("assets/images/beep.mp3"); ?>');
-                            audio.play();
-
-                            $.ajax({
-                                url: "<?= base_url('menu/cariKodeBukuDanSimpan'); ?>",
-                                type: "post",
-                                data: {
-                                    qrcode: content,
-                                    kelas: kel,
-                                    kode_transaksi: kode,
-                                    tgl_peminjaman: tglpinjam,
-                                    tgl_pengembalian: tglkembali,
-                                    id_siswa: id_siswa
-                                },
-                                dataType: "json",
-                                cache: false,
-                                success: function(o) {
-                                    console.log(o);
-                                    if (o == 'bukuSudahAda') {
-
-                                    } else if (o == 'gagalSimpanPeminjaman') {
-
-                                    } else if (o == 'gagalSimpanPeminjamanDetail') {
-
-                                    } else if (o == 'bukuSudahDiPinjam') {
-
-                                    } else if (o == 'bukuTidakAda') {
-
-                                    } else if (o == 'sukses') {
-
-                                        $('#tambah').modal("hide")
-                                        const that = this;
-                                        this.ispreview = false;
-                                        that.isclick = true;
-                                        scanner.stop();
-                                        $('#tabel_peminjaman_detail').DataTable().ajax.reload()
-                                        setTimeout(() => {}, 500);
-                                        var nmsiswa = $('#txtsiswa').find(':selected').text()
-                                        $('#txtsiswa').html('<option value="' + id_siswa + '">' + nmsiswa + '</option>');
-                                        $('#txtsiswa').attr("disabled", true);
-                                    }
-                                },
-                                error: function(jqxhr, status, err) {
-                                    console.log(jqxhr)
-                                    alert('Koneksi Lambat. clickscan')
-                                    window.location = ''
-                                }
-                            });
-                        });
-                        Instascan.Camera.getCameras().then(function(cameras) {
-                            if (cameras.length > 0) {
-                                scanner.start(cameras[0]);
-                            } else {
-                                // console.error('No cameras found.');
-                                alert('No cameras found.');
-                            }
-                        }).catch(function(e) {
-                            console.error(e);
-                            alert(e);
-                        });
-                    }, 500);
-                }
-            }
-
-            function clickReset() {
-                var id_siswa = $('#txtsiswa').val();
-                var kel = $('#txtkelas').val();
-                var kode = $('#txtkode_transaksi').val();
-                var tglpinjam = $('#txttgl_peminjaman').val();
-                var tglkembali = $('#txttgl_pengembalian').val();
-                console.log(id_siswa, kel, kode, tglpinjam, tglkembali);
-
-                if (kel == '') {
-
-                } else if (kode == '') {
-
-                } else if (tglpinjam == '') {
-
-                } else if (tglkembali == '') {
-
-                } else if (id_siswa == 'kosong') {
-
-                } else {
-
-                    if (confirm('Apakah Yakin dengan keputusan Anda?')) {
-
-                        $.ajax({
-                            url: "<?= base_url('menu/resetPeminjamanProses'); ?>",
-                            type: "post",
-                            data: {
-                                kelas: kel,
-                                kode_transaksi: kode,
-                                tgl_peminjaman: tglpinjam,
-                                tgl_pengembalian: tglkembali,
-                                id_siswa: id_siswa
-                            },
-                            dataType: "json",
-                            cache: false,
-                            success: function(data) {
-                                console.log(data);
-                                if (data == '1') {
-                                    alert('sukses')
-                                    window.location = ''
-                                } else if (data == 'dataMasihKosong') {
-                                    alert('dataMasihKosong')
-                                } else if (data == 'peminjamanGagalDiHapus') {
-                                    alert('peminjamanGagalDiHapus')
-                                    window.location = ''
-                                } else if (data == 'peminjamanDetailGagalDiHapus') {
-                                    alert('peminjamanDetailGagalDiHapus')
-                                    window.location = ''
-                                }
-                            },
-                            error: function(jqxhr, status, err) {
-                                console.log(jqxhr)
-                                alert('Koneksi Lambat. clicksiswa')
-                                window.location = ''
-                            }
-                        });
-                    }
-
-                }
-            }
-
             function clickProses() {
                 var id_siswa = $('#txtsiswa').val();
                 var kel = $('#txtkelas').val();
@@ -411,11 +188,5 @@
                     }
 
                 }
-            }
-
-            function clickclose() {
-                const video = document.getElementById('preview');
-                const mediaStream = video.srcObject;
-                scanner.stop();
             }
         </script>
